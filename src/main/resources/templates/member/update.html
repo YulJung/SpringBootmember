@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:input="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script>
+        const memberUpdate = () => {
+          console.log('수정함수호출');
+          let id = document.getElementById('memberId').value;
+          let email = document.getElementById('memberEmail').value;
+          let password = document.getElementById('memberPassword').value;
+          let name = document.getElementById('memberName').value;
+          //자바스크립트 오브젝트에 담아서 보냄
+            const updateData = JSON.stringify({
+                memberId:id,
+                memberEmail:email,
+                memberPassword: password,
+                memberName : name
+            });
+            console.log(updateData);
+            const reqUrl ="/member/"+id;
+            $.ajax({
+                type: 'put', // put :덮어씌우기 patch: 수정이 필요한부분만 바뀜
+                data: updateData,
+                url: reqUrl,
+                contentType: 'application/json', //json으로 보낼때 사용
+                success: function (){
+                    location.href='/member/'+id;
+                },
+                error(){
+                    alert('ajax fail');
+                }
+            });
+        }
+
+
+    </script>
+</head>
+<body>
+    <form action="/member/update" method="post" >
+        이메일:<input type="text" id="memberEmail" name="memberEmail" th:value="${member.memberEmail}" readonly>
+        이름:<input type="text" id="memberName" name="memberName" th:value="${member.memberName}" >
+        비밀번호:<input type="text" id="memberPassword" name="memberPassword" th:value="${member.memberPassword}" readonly>
+        <input type="hidden" name="memberId" id="memberId" th:value="${member.memberId}">
+        <input type="submit" value="제출">
+        <input type="button" value="제출 put" th:onclick="memberUpdate()">
+        
+    </form>
+</body>
+</html>
