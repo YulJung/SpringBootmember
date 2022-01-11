@@ -15,3 +15,9 @@ spring:
       ddl-auto: update
   thymeleaf:
     cache: false
+
+#mybatis
+mybatis:
+  mapper-locations: mapper/*.xml
+  #alias
+  type-aliases-package: com.icia.member.dto

@@ -1,7 +1,9 @@
 package com.icia.member.member;
 
 import com.icia.member.dto.MemberDetailDTO;
+import com.icia.member.dto.MemberMapperDTO;
 import com.icia.member.dto.MemberSaveDTO;
+import com.icia.member.repository.MemberMapperRepository;
 import com.icia.member.service.MemberService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,6 +13,7 @@ import org.springframework.test.annotation.Rollback;
 
 import javax.transaction.Transactional;
 import java.lang.reflect.Member;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.*;
@@ -20,6 +23,8 @@ public class MemberTest {
 
     @Autowired
     private MemberService ms;
+    @Autowired
+    private MemberMapperRepository mr;
 
     @Test
     @Transactional
@@ -87,8 +92,32 @@ public class MemberTest {
         //가입
         //수정
         //아이디로 조회
+        String memberEmail = "수정회원";
+        String memberPassword="수정비번";
+        String memberName="수정이름";
+        MemberSaveDTO memberSaveDTO = new MemberSaveDTO(memberEmail,memberPassword,memberName);
+        long saveMemberId = ms.save(memberSaveDTO);
+        String saveMemberName = ms.findById(saveMemberId).getMemberName();
+        String updateName = "이름수정";
+        MemberDetailDTO memberDetailDTO = new MemberDetailDTO(saveMemberId,memberEmail,memberPassword,updateName);
+        ms.update(memberDetailDTO);
+        String updateMemberName = ms.findById(saveMemberId).getMemberName();
+        assertThat(saveMemberName).isNotEqualTo(updateMemberName);
 
-
+    }
+    @Test
+    @DisplayName("memberList")
+    public void memberListTest(){
+        List<MemberMapperDTO> memberList = mr.memberList();
+        for(MemberMapperDTO m:memberList){
+            System.out.println("m = "+m.toString());
+        }
+    }
+    @Test
+    @DisplayName("saveTest")
+    public void memberSaveTest(){
+        MemberMapperDTO memberMapperDTO = new MemberMapperDTO("tsetEmail", "testpassword", "testname");
+        mr.save(memberMapperDTO);
 
     }
 }

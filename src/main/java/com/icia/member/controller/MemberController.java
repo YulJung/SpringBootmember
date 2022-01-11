@@ -35,24 +35,49 @@ public class MemberController {
         return "redirect:/member/findAll";
     }
     @GetMapping("login")
-    public String memberLogin(Model model){
-        model.addAttribute("login",new MemberLoginDTO());
+    public String memberLogin(@RequestParam(defaultValue = "/") String redirectURL){
+        System.out.println("MemberController.LoginForm");
+        System.out.println("redirectURL = "+redirectURL);
         return "member/login";
     }
     @PostMapping("login")
-    public String doLogin(@Validated @ModelAttribute("login") MemberLoginDTO memberLoginDTO, BindingResult bindingResult, HttpSession session){
+    public String doLogin(@Validated @ModelAttribute("login") MemberLoginDTO memberLoginDTO, HttpSession session,
+    @RequestParam(defaultValue = "/")String redirectURL ){
         System.out.println(memberLoginDTO);
-        if(bindingResult.hasErrors()) return "member/login";
-        // boolean result = ms.login(login);
-        if(ms.login(memberLoginDTO)){
+//        if(bindingResult.hasErrors()) return "member/login";
+         boolean result = ms.login(memberLoginDTO);
+        if(result){
             session.setAttribute("loginEmail",memberLoginDTO.getMemberEmail());
-            return "/member/mypage";
+//            return "/member/mypage";
+            return "redirect:"+redirectURL;
         }else{
-            bindingResult.reject("loginfail","이메일또는 비밀번호가 틀립니다.");
+//            bindingResult.reject("loginfail","이메일또는 비밀번호가 틀립니다.");
             return "member/login";
         }
 
     }
+//    @PostMapping("login")
+//    public String doLogin(@Validated @ModelAttribute("login") MemberLoginDTO memberLoginDTO, BindingResult bindingResult, HttpSession session,
+//                          @RequestParam(defaultValue = "/")String redirectURL ){
+//        System.out.println(memberLoginDTO);
+//        if(bindingResult.hasErrors()) return "member/login";
+//        // boolean result = ms.login(login);
+//        if(ms.login(memberLoginDTO)){
+//            session.setAttribute("loginEmail",memberLoginDTO.getMemberEmail());
+////            return "/member/mypage";
+//            return "redirect:"+redirectURL;
+//        }else{
+//            bindingResult.reject("loginfail","이메일또는 비밀번호가 틀립니다.");
+//            return "member/login";
+//        }
+//
+//    }
+    @GetMapping("logout")
+    public String logout(HttpSession session){
+        session.invalidate();
+        return "index";
+    }
+
     @GetMapping("{memberId}")
     public String findById(@PathVariable("memberId") Long memberId, Model model, @ModelAttribute("member")
             MemberSaveDTO memberSaveDTO, BindingResult bindingResult){//pathVariable 경로상에 있는변수가져오는거
